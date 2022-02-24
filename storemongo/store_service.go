@@ -22,7 +22,7 @@ type Url struct {
 
 func connect() (*mongo.Database, error) {
 	clientOptions := options.Client()
-	clientOptions.ApplyURI("mongodb://127.0.0.1:27018")
+	clientOptions.ApplyURI("mongodb://mongodb")
 	client, err := mongo.NewClient(clientOptions)
 	if err != nil {
 		return nil, err
