@@ -81,8 +81,9 @@ func SaveUrlMapping(shortUrl string, originalUrl string, UUID string, Webhook st
 	fmt.Printf("Saved shortUrl: %s - originalUrl: %s\n", shortUrl, originalUrl)
 }
 
-func RetrieveInitialUrl(shortUrl string) string {
+func RetrieveInitialUrl(shortUrl string) []string {
 	var resurl Url
+	ret := []string{}
 
 	db, err := connect()
 	if err != nil {
@@ -91,11 +92,16 @@ func RetrieveInitialUrl(shortUrl string) string {
 
 	if err = db.Collection("urlCollection").FindOne(ctx, bson.M{"shorturl": shortUrl}).Decode(&resurl); err != nil {
 		//panic(fmt.Sprintf("Failed RetrieveInitialUrl url | Error: %v - shortUrl: %s\n", err, shortUrl))
-		return "error"
+		ret = append(ret, "error")
+		return ret
 	}
 
 	res := make([]Url, 0)
 	res = append(res, resurl)
 
-	return res[0].Originalurl
+	ret = append(ret, res[0].Originalurl)
+	ret = append(ret, res[0].Webhook)
+
+	return ret
+
 }

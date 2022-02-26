@@ -37,23 +37,23 @@ func CreateShortUrl(c *gin.Context) {
 
 func HandleShortUrlRedirect(c *gin.Context) {
 	shortUrl := c.Param("shortUrl")
-	initialUrl := storemongo.RetrieveInitialUrl(shortUrl)
+	data := storemongo.RetrieveInitialUrl(shortUrl)
 	//fmt.Printf("Found : %s \n", initialUrl)
 
-	if initialUrl == "error" {
+	if data[0] == "error" {
 		c.Redirect(302, storemongo.GoDotEnvVariable("DEFAULT_URL"))
 	} else {
-		c.Redirect(302, initialUrl)
+		c.Redirect(302, data[0])
 		values := map[string]string{"shortUrl": shortUrl}
 		jsonData, _ := json.Marshal(values)
 
-		go doPost(jsonData)
+		go doPost(jsonData, data[1])
 	}
 
 }
 
-func doPost(jsonData []byte) {
-	_, err := http.Post("https://webhook.site/7e264ef8-4b63-4021-a6c0-5b1468d90429", "application/json", bytes.NewBuffer(jsonData))
+func doPost(jsonData []byte, webhook string) {
+	_, err := http.Post(webhook, "application/json", bytes.NewBuffer(jsonData))
 
 	if err != nil {
 		log.Fatal(err)
