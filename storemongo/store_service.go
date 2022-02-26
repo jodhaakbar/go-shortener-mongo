@@ -4,8 +4,10 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 	"time"
 
+	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -21,9 +23,29 @@ type Url struct {
 	Createdat   int64  `bson:"createdat"`
 }
 
+// use godot package to load/read the .env file and
+// return the value of the key
+func goDotEnvVariable(key string) string {
+
+	// load .env file
+	err := godotenv.Load(".env")
+
+	if err != nil {
+		log.Fatalf("Error loading .env file")
+	}
+
+	return os.Getenv(key)
+}
+
 func connect() (*mongo.Database, error) {
+
+	// godotenv package
+	mongourl := goDotEnvVariable("MONGODB_URL")
+
+	fmt.Printf("godotenv : %s = %s \n", "STRONGEST_AVENGER", mongourl)
+
 	clientOptions := options.Client()
-	clientOptions.ApplyURI("mongodb://mongodb")
+	clientOptions.ApplyURI("mongodb://" + mongourl)
 	client, err := mongo.NewClient(clientOptions)
 	if err != nil {
 		return nil, err
