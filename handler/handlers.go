@@ -10,8 +10,9 @@ import (
 )
 
 type UrlCreationRequest struct {
-	LongUrl string `json:"long_url" binding:"required"`
+	LongUrl string `json:"long_url" binding:"required,url"`
 	UserId  string `json:"user_id" binding:"required"`
+	Webhook string `json:"webhook" binding:"required,url"`
 }
 
 func CreateShortUrl(c *gin.Context) {
@@ -22,7 +23,7 @@ func CreateShortUrl(c *gin.Context) {
 	}
 
 	shortUrl := shortener.GenerateShortLink(creationRequest.LongUrl, creationRequest.UserId)
-	storemongo.SaveUrlMapping(shortUrl, creationRequest.LongUrl, creationRequest.UserId)
+	storemongo.SaveUrlMapping(shortUrl, creationRequest.LongUrl, creationRequest.UserId, creationRequest.Webhook)
 
 	host := "http://localhost:9808/"
 	c.JSON(200, gin.H{

@@ -17,6 +17,7 @@ type Url struct {
 	Shorturl    string `bson:"shorturl"`
 	Originalurl string `bson:"originalurl"`
 	Uuid        string `bson:"uuid"`
+	Webhook     string `bson:"webhook"`
 	Createdat   int64  `bson:"createdat"`
 }
 
@@ -36,7 +37,7 @@ func connect() (*mongo.Database, error) {
 	return client.Database("goshort"), nil
 }
 
-func SaveUrlMapping(shortUrl string, originalUrl string, UUID string) {
+func SaveUrlMapping(shortUrl string, originalUrl string, UUID string, Webhook string) {
 
 	db, err := connect()
 	if err != nil {
@@ -48,7 +49,7 @@ func SaveUrlMapping(shortUrl string, originalUrl string, UUID string) {
 		panic(err)
 	}
 	if count == 0 {
-		_, err = db.Collection("urlCollection").InsertOne(ctx, Url{Shorturl: shortUrl, Originalurl: originalUrl, Uuid: UUID, Createdat: time.Now().Unix()})
+		_, err = db.Collection("urlCollection").InsertOne(ctx, Url{Shorturl: shortUrl, Originalurl: originalUrl, Uuid: UUID, Createdat: time.Now().Unix(), Webhook: Webhook})
 
 		if err != nil {
 			panic(fmt.Sprintf("Failed saving key url | Error: %v - shortUrl: %s - originalUrl: %s\n", err, shortUrl, originalUrl))
