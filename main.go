@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/eddywm/go-shortner/handler"
 	"github.com/gin-gonic/gin"
+	"github.com/jodhaakbar/go-shortener-mongo/handler"
 )
 
 func main() {

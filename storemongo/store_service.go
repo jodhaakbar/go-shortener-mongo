@@ -25,7 +25,7 @@ type Url struct {
 
 // use godot package to load/read the .env file and
 // return the value of the key
-func goDotEnvVariable(key string) string {
+func GoDotEnvVariable(key string) string {
 
 	// load .env file
 	err := godotenv.Load(".env")
@@ -40,7 +40,7 @@ func goDotEnvVariable(key string) string {
 func connect() (*mongo.Database, error) {
 
 	// godotenv package
-	mongourl := goDotEnvVariable("MONGODB_URL")
+	mongourl := GoDotEnvVariable("MONGODB_URL")
 
 	fmt.Printf("godotenv : %s = %s \n", "STRONGEST_AVENGER", mongourl)
 

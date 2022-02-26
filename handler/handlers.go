@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/eddywm/go-shortner/shortener"
-	"github.com/eddywm/go-shortner/storemongo"
 	"github.com/gin-gonic/gin"
+	"github.com/jodhaakbar/go-shortener-mongo/shortener"
+	"github.com/jodhaakbar/go-shortener-mongo/storemongo"
 )
 
 type UrlCreationRequest struct {
@@ -25,7 +25,7 @@ func CreateShortUrl(c *gin.Context) {
 	shortUrl := shortener.GenerateShortLink(creationRequest.LongUrl, creationRequest.UserId)
 	storemongo.SaveUrlMapping(shortUrl, creationRequest.LongUrl, creationRequest.UserId, creationRequest.Webhook)
 
-	host := "http://localhost:9808/"
+	host := storemongo.GoDotEnvVariable("HOST_URL")
 	c.JSON(200, gin.H{
 		"message":   "short url created successfully",
 		"short_url": host + shortUrl,

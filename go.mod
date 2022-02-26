@@ -1,5 +1,4 @@
-module github.com/eddywm/go-shortner
-
+module github.com/jodhaakbar/go-shortener-mongo
 go 1.13
 
 require (
