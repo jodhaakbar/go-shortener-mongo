@@ -42,7 +42,7 @@ func connect() (*mongo.Database, error) {
 	// godotenv package
 	mongourl := GoDotEnvVariable("MONGODB_URL")
 
-	fmt.Printf("godotenv : %s = %s \n", "STRONGEST_AVENGER", mongourl)
+	// fmt.Printf("godotenv : %s = %s \n", "STRONGEST_AVENGER", mongourl)
 
 	clientOptions := options.Client()
 	clientOptions.ApplyURI("mongodb://" + mongourl)
@@ -90,7 +90,8 @@ func RetrieveInitialUrl(shortUrl string) string {
 	}
 
 	if err = db.Collection("urlCollection").FindOne(ctx, bson.M{"shorturl": shortUrl}).Decode(&resurl); err != nil {
-		panic(fmt.Sprintf("Failed RetrieveInitialUrl url | Error: %v - shortUrl: %s\n", err, shortUrl))
+		//panic(fmt.Sprintf("Failed RetrieveInitialUrl url | Error: %v - shortUrl: %s\n", err, shortUrl))
+		return "error"
 	}
 
 	res := make([]Url, 0)

@@ -1,7 +1,9 @@
 package handler
 
 import (
-	"fmt"
+	"bytes"
+	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -36,6 +38,24 @@ func CreateShortUrl(c *gin.Context) {
 func HandleShortUrlRedirect(c *gin.Context) {
 	shortUrl := c.Param("shortUrl")
 	initialUrl := storemongo.RetrieveInitialUrl(shortUrl)
-	fmt.Printf("Found : %s \n", initialUrl)
-	c.Redirect(302, initialUrl)
+	//fmt.Printf("Found : %s \n", initialUrl)
+
+	if initialUrl == "error" {
+		c.Redirect(302, storemongo.GoDotEnvVariable("DEFAULT_URL"))
+	} else {
+		c.Redirect(302, initialUrl)
+		values := map[string]string{"shortUrl": shortUrl}
+		jsonData, _ := json.Marshal(values)
+
+		go doPost(jsonData)
+	}
+
+}
+
+func doPost(jsonData []byte) {
+	_, err := http.Post("https://webhook.site/7e264ef8-4b63-4021-a6c0-5b1468d90429", "application/json", bytes.NewBuffer(jsonData))
+
+	if err != nil {
+		log.Fatal(err)
+	}
 }
