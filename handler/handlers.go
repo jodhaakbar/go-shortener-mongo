@@ -3,7 +3,6 @@ package handler
 import (
 	"bytes"
 	"encoding/json"
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -19,6 +18,7 @@ type UrlCreationRequest struct {
 
 func CreateShortUrl(c *gin.Context) {
 	var creationRequest UrlCreationRequest
+
 	if err := c.ShouldBindJSON(&creationRequest); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -37,8 +37,23 @@ func CreateShortUrl(c *gin.Context) {
 
 func HandleShortUrlRedirect(c *gin.Context) {
 	shortUrl := c.Param("shortUrl")
+
+	apiKey := storemongo.GoDotEnvVariable("API_KEY")
+
+	values := c.Request.Header["Api-Key"]
+
+	if len(values) > 0 {
+		if values[0] != apiKey {
+			c.JSON(http.StatusForbidden, gin.H{"error": "error"})
+			return
+		}
+	} else {
+		c.JSON(http.StatusForbidden, gin.H{"error": "error"})
+		return
+	}
+
 	data := storemongo.RetrieveInitialUrl(shortUrl)
-	//fmt.Printf("Found : %s \n", initialUrl)
+	//fmt.Printf("Found : %s \n", values[0])
 
 	if data[0] == "error" {
 		c.Redirect(302, storemongo.GoDotEnvVariable("DEFAULT_URL"))
@@ -46,16 +61,21 @@ func HandleShortUrlRedirect(c *gin.Context) {
 		c.Redirect(302, data[0])
 		values := map[string]string{"shortUrl": shortUrl}
 		jsonData, _ := json.Marshal(values)
+		key := storemongo.GoDotEnvVariable("WEBHOOK_KEY")
 
-		go doPost(jsonData, data[1])
+		go doPost(jsonData, data[1], key)
 	}
 
 }
 
-func doPost(jsonData []byte, webhook string) {
-	_, err := http.Post(webhook, "application/json", bytes.NewBuffer(jsonData))
+func doPost(jsonData []byte, webhook string, key string) {
+	client := &http.Client{}
+	req, _ := http.NewRequest("POST", webhook, bytes.NewBuffer(jsonData))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("key", key)
+	_, err := client.Do(req)
 
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 }
