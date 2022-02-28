@@ -39,13 +39,16 @@ func GoDotEnvVariable(key string) string {
 
 func connect() (*mongo.Database, error) {
 
-	// godotenv package
-	mongourl := GoDotEnvVariable("MONGODB_URL")
-
 	// fmt.Printf("godotenv : %s = %s \n", "STRONGEST_AVENGER", mongourl)
 
+	// credential := options.Credential{
+	// 	Username: GoDotEnvVariable("MONGO_USER"),
+	// 	Password: GoDotEnvVariable("MONGODB_PASSWORD"),
+	// }
+
 	clientOptions := options.Client()
-	clientOptions.ApplyURI("mongodb://" + mongourl)
+	// clientOptions.SetAuth(credential)
+	clientOptions.ApplyURI(GoDotEnvVariable("MONGODB_URL"))
 	client, err := mongo.NewClient(clientOptions)
 	if err != nil {
 		return nil, err
