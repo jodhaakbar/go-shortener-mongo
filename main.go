@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/jodhaakbar/go-shortener-mongo/handler"
+	"github.com/jodhaakbar/go-shortener-mongo/storemongo"
 )
 
 func main() {
@@ -23,7 +24,9 @@ func main() {
 		handler.HandleShortUrlRedirect(c)
 	})
 
-	err := r.Run(":9808")
+	port := storemongo.GoDotEnvVariable("PORT")
+
+	err := r.Run(":" + port)
 	if err != nil {
 		panic(fmt.Sprintf("Failed to start the web server - Error: %v", err))
 	}
