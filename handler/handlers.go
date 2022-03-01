@@ -24,20 +24,6 @@ func CreateShortUrl(c *gin.Context) {
 		return
 	}
 
-	shortUrl := shortener.GenerateShortLink(creationRequest.LongUrl, creationRequest.UserId)
-	storemongo.SaveUrlMapping(shortUrl, creationRequest.LongUrl, creationRequest.UserId, creationRequest.Webhook)
-
-	host := storemongo.GoDotEnvVariable("HOST_URL")
-	c.JSON(200, gin.H{
-		"message":   "short url created successfully",
-		"short_url": host + shortUrl,
-	})
-
-}
-
-func HandleShortUrlRedirect(c *gin.Context) {
-	shortUrl := c.Param("shortUrl")
-
 	apiKey := storemongo.GoDotEnvVariable("API_KEY")
 
 	values := c.Request.Header["Api-Key"]
@@ -51,6 +37,20 @@ func HandleShortUrlRedirect(c *gin.Context) {
 		c.JSON(http.StatusForbidden, gin.H{"error": "error"})
 		return
 	}
+
+	shortUrl := shortener.GenerateShortLink(creationRequest.LongUrl, creationRequest.UserId)
+	storemongo.SaveUrlMapping(shortUrl, creationRequest.LongUrl, creationRequest.UserId, creationRequest.Webhook)
+
+	host := storemongo.GoDotEnvVariable("HOST_URL")
+	c.JSON(200, gin.H{
+		"message":   "short url created successfully",
+		"short_url": host + shortUrl,
+	})
+
+}
+
+func HandleShortUrlRedirect(c *gin.Context) {
+	shortUrl := c.Param("shortUrl")
 
 	data := storemongo.RetrieveInitialUrl(shortUrl)
 	//fmt.Printf("Found : %s \n", values[0])
