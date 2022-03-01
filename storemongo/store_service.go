@@ -71,17 +71,17 @@ func SaveUrlMapping(shortUrl string, originalUrl string, UUID string, Webhook st
 		log.Fatal(err.Error())
 	}
 	// check if exist
-	count, err := db.Collection("urlCollection").CountDocuments(ctx, bson.M{"shorturl": shortUrl})
-	if err != nil {
-		panic(err)
-	}
-	if count == 0 {
-		_, err = db.Collection("urlCollection").InsertOne(ctx, Url{Shorturl: shortUrl, Originalurl: originalUrl, Uuid: UUID, Createdat: time.Now().Unix(), Webhook: Webhook})
+	// count, err := db.Collection("urlCollection").CountDocuments(ctx, bson.M{"shorturl": shortUrl})
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// if count == 0 {
+	_, err = db.Collection("urlCollection").InsertOne(ctx, Url{Shorturl: shortUrl, Originalurl: originalUrl, Uuid: UUID, Createdat: time.Now().Unix(), Webhook: Webhook})
 
-		if err != nil {
-			panic(fmt.Sprintf("Failed saving key url | Error: %v - shortUrl: %s - originalUrl: %s\n", err, shortUrl, originalUrl))
-		}
+	if err != nil {
+		panic(fmt.Sprintf("Failed saving key url | Error: %v - shortUrl: %s - originalUrl: %s\n", err, shortUrl, originalUrl))
 	}
+	// }
 
 	fmt.Printf("Saved shortUrl: %s - originalUrl: %s\n", shortUrl, originalUrl)
 }
