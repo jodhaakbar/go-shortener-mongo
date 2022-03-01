@@ -32,6 +32,8 @@ func GoDotEnvVariable(key string) string {
 
 	if err != nil {
 		log.Fatalf("Error loading .env file")
+	} else {
+		return os.Getenv(key)
 	}
 
 	return os.Getenv(key)
